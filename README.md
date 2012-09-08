@@ -1,0 +1,1 @@
+Recursive directory plugin for [Kupfer](https://github.com/engla/kupfer)
