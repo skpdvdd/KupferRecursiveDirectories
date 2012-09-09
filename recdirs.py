@@ -73,13 +73,13 @@ class RecursiveDirectorySource (Source):
         return _("Recursive subdirectory access")
 
     def _get_dirs(self):
-        rootdirs, levels = self._get_root_dirs()
+        dirinfo = self._get_root_dirs()
         blacklist = self._get_blacklist()
         directories = set()
 
-        for i in range(len(rootdirs)):
-            directories.add(rootdirs[i])
-            get_recursive_subdirectories(rootdirs[i], blacklist, 1, levels[i], directories)
+        for dir, levels in dirinfo.iteritems():
+            directories.add(dir)
+            get_recursive_subdirectories(dir, blacklist, 1, levels, directories)
 
         return directories
 
@@ -93,18 +93,12 @@ class RecursiveDirectorySource (Source):
         if len(dirs) != len(levels):
             raise ValueError('Must define number of recursion levels for every root directory.')
 
-        i = 0
-        rem = []
+        info = dict(zip(dirs, levels))
         for d in dirs:
             if not os.path.isdir(d):
-                rem.append(i)
-            i = i + 1
+                del info[d]
 
-        for r in rem:
-            del dirs[r]
-            del levels[r]
-
-        return dirs, levels
+        return info
 
     def _get_blacklist(self):
         if not __kupfer_settings__['blacklist']:
